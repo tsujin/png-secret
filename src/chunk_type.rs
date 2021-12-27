@@ -4,15 +4,12 @@ use std::fmt;
 
 #[derive(Debug, PartialEq, Eq)]
 struct ChunkType {
-    first_byte: u8,
-    second_byte: u8,
-    third_byte: u8,
-    fourth_byte: u8,
+    byte_str: std::string::String,
 }
 
 impl fmt::Display for ChunkType {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(f, "[{}, {}, {}, {}]", self.first_byte, self.second_byte, self.third_byte, self.fourth_byte)
+        write!(f, "{}", self.byte_str)
     }
 }
 
@@ -20,11 +17,10 @@ impl TryFrom<[u8; 4]> for ChunkType {
     type Error = &'static str;
 
     fn try_from(value: [u8; 4]) -> Result<Self, Self::Error> {
+
+        let converted_string = String::from(std::str::from_utf8(&value).unwrap());
         let chunk = ChunkType {
-            first_byte: value[0],
-            second_byte: value[1],
-            third_byte: value[2],
-            fourth_byte: value[3],
+            byte_str: converted_string,
         };
 
         Ok(chunk)
@@ -35,13 +31,9 @@ impl FromStr for ChunkType {
     type Err = ParseIntError;
 
     fn from_str(string: &str) -> Result<Self, Self::Err> {
-        let byte_array: Vec<_> = string.chars().collect();
 
         let chunk = ChunkType {
-            first_byte: byte_array[0] as u8,
-            second_byte: byte_array[1] as u8,
-            third_byte: byte_array[2] as u8,
-            fourth_byte: byte_array[3] as u8,
+            byte_str: String::from(string),
         };
 
         Ok(chunk)
@@ -50,7 +42,11 @@ impl FromStr for ChunkType {
 
 impl ChunkType {
     fn bytes(&self) -> [u8; 4] {
-        return [self.first_byte, self.second_byte, self.third_byte, self.fourth_byte]
+        self.byte_str.as_bytes().try_into().unwrap()
+    }
+
+    fn is_valid(&self) -> bool {
+
     }
 }
 
