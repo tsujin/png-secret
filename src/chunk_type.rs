@@ -1,12 +1,19 @@
 use std::str::FromStr;
 use std::num::ParseIntError;
+use std::fmt;
 
-#[derive(Debug)]
+#[derive(Debug, PartialEq, Eq)]
 struct ChunkType {
     first_byte: u8,
     second_byte: u8,
     third_byte: u8,
     fourth_byte: u8,
+}
+
+impl fmt::Display for ChunkType {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "[{}, {}, {}, {}]", self.first_byte, self.second_byte, self.third_byte, self.fourth_byte)
+    }
 }
 
 impl TryFrom<[u8; 4]> for ChunkType {
