@@ -46,7 +46,27 @@ impl ChunkType {
     }
 
     fn is_valid(&self) -> bool {
+        self.is_reserved_bit_valid() // todo: add check for numeric
+    }
 
+    fn is_safe_to_copy(&self) -> bool {
+        let ch = self.byte_str.chars().nth(3).unwrap();
+        ch.is_lowercase()
+    }
+
+    fn is_public(&self) -> bool {
+        let ch = self.byte_str.chars().nth(1).unwrap();
+        ch.is_uppercase()
+    }
+
+    fn is_critical(&self) -> bool {
+        let ch = self.byte_str.chars().nth(0).unwrap();
+        ch.is_uppercase()
+    }
+
+    fn is_reserved_bit_valid(&self) -> bool {
+        let ch = self.byte_str.chars().nth(2).unwrap();
+        ch.is_uppercase()
     }
 }
 
