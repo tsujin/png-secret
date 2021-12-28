@@ -3,7 +3,7 @@ use std::fmt;
 use crate::{Error, Result};
 
 #[derive(Debug, PartialEq, Eq)]
-struct ChunkType {
+pub struct ChunkType {
     byte_str: std::string::String,
 }
 
