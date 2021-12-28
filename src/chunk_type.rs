@@ -1,6 +1,6 @@
 use std::str::FromStr;
-use std::num::ParseIntError;
 use std::fmt;
+use crate::{Error, Result};
 
 #[derive(Debug, PartialEq, Eq)]
 struct ChunkType {
@@ -14,9 +14,9 @@ impl fmt::Display for ChunkType {
 }
 
 impl TryFrom<[u8; 4]> for ChunkType {
-    type Error = &'static str;
+    type Error = Error;
 
-    fn try_from(value: [u8; 4]) -> Result<Self, Self::Error> {
+    fn try_from(value: [u8; 4]) -> Result<Self> {
 
         let converted_string = String::from(std::str::from_utf8(&value).unwrap());
         let chunk = ChunkType {
@@ -28,15 +28,18 @@ impl TryFrom<[u8; 4]> for ChunkType {
 }
 
 impl FromStr for ChunkType {
-    type Err = ParseIntError;
+    type Err = Error;
 
-    fn from_str(string: &str) -> Result<Self, Self::Err> {
-
-        let chunk = ChunkType {
-            byte_str: String::from(string),
-        };
-
-        Ok(chunk)
+    fn from_str(string: &str) -> Result<Self> {
+        if string.chars().all(char::is_alphabetic) {
+            let chunk = ChunkType {
+                byte_str: String::from(string),
+            };
+            
+            Ok(chunk)
+        } else {
+            Err("Chunk must be alphabetic")?
+        }
     }
 }
 
@@ -46,7 +49,7 @@ impl ChunkType {
     }
 
     fn is_valid(&self) -> bool {
-        self.is_reserved_bit_valid() // todo: add check for numeric
+        self.is_reserved_bit_valid()
     }
 
     fn is_safe_to_copy(&self) -> bool {
@@ -66,7 +69,7 @@ impl ChunkType {
 
     fn is_reserved_bit_valid(&self) -> bool {
         let ch = self.byte_str.chars().nth(2).unwrap();
-        ch.is_uppercase()
+        ch.is_uppercase() && ch.is_alphabetic()
     }
 }
 
