@@ -4,7 +4,10 @@ use crate::{Error, Result};
 
 #[derive(Debug, PartialEq, Eq)]
 pub struct ChunkType {
-    byte_str: std::string::String,
+    ancillary_bit: u8,
+    private_bit: u8,
+    reserved_bit: u8,
+    safe_to_copy_bit: u8,
 }
 
 impl fmt::Display for ChunkType {
@@ -20,7 +23,10 @@ impl TryFrom<[u8; 4]> for ChunkType {
 
         let converted_string = String::from(std::str::from_utf8(&value).unwrap());
         let chunk = ChunkType {
-            byte_str: converted_string,
+            ancillary_bit: value[0],
+            private_bit: value[1],
+            reserved_bit: value[2],
+            safe_to_copy_bit: value[3],
         };
 
         Ok(chunk)
