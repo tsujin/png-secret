@@ -37,9 +37,14 @@ impl FromStr for ChunkType {
     type Err = Error;
 
     fn from_str(string: &str) -> Result<Self> {
-        if string.chars().all(char::is_alphabetic) {
+        let chars = string.chars();
+
+        if chars.all(char::is_alphabetic) {
             let chunk = ChunkType {
-                byte_str: String::from(string),
+                ancillary_bit: chars.next().unwrap() as u8,
+                private_bit: chars.next().unwrap() as u8,
+                reserved_bit: chars.next().unwrap() as u8,
+                safe_to_copy_bit: chars.next().unwrap() as u8,
             };
             
             Ok(chunk)
