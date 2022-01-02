@@ -12,7 +12,11 @@ pub struct ChunkType {
 
 impl fmt::Display for ChunkType {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(f, "{}", self.byte_str)
+        write!(f, "{}{}{}{}", 
+            self.ancillary_bit as char,
+            self.private_bit as char,
+            self.reserved_bit as char,
+            self.safe_to_copy_bit as char)
     }
 }
 
@@ -20,8 +24,6 @@ impl TryFrom<[u8; 4]> for ChunkType {
     type Error = Error;
 
     fn try_from(value: [u8; 4]) -> Result<Self> {
-
-        let converted_string = String::from(std::str::from_utf8(&value).unwrap());
         let chunk = ChunkType {
             ancillary_bit: value[0],
             private_bit: value[1],
@@ -37,9 +39,9 @@ impl FromStr for ChunkType {
     type Err = Error;
 
     fn from_str(string: &str) -> Result<Self> {
-        let chars = string.chars();
+        if string.chars().all(char::is_alphabetic) {
+            let mut chars = string.chars();
 
-        if chars.all(char::is_alphabetic) {
             let chunk = ChunkType {
                 ancillary_bit: chars.next().unwrap() as u8,
                 private_bit: chars.next().unwrap() as u8,
@@ -56,7 +58,12 @@ impl FromStr for ChunkType {
 
 impl ChunkType {
     fn bytes(&self) -> [u8; 4] {
-        self.byte_str.as_bytes().try_into().unwrap()
+        [
+            self.ancillary_bit,
+            self.private_bit,
+            self.reserved_bit,
+            self.safe_to_copy_bit,
+        ]
     }
 
     fn is_valid(&self) -> bool {
@@ -64,22 +71,22 @@ impl ChunkType {
     }
 
     fn is_safe_to_copy(&self) -> bool {
-        let ch = self.byte_str.chars().nth(3).unwrap();
+        let ch = self.safe_to_copy_bit as char;
         ch.is_lowercase()
     }
 
     fn is_public(&self) -> bool {
-        let ch = self.byte_str.chars().nth(1).unwrap();
+        let ch = self.private_bit as char;
         ch.is_uppercase()
     }
 
     fn is_critical(&self) -> bool {
-        let ch = self.byte_str.chars().nth(0).unwrap();
+        let ch = self.ancillary_bit as char;
         ch.is_uppercase()
     }
 
     fn is_reserved_bit_valid(&self) -> bool {
-        let ch = self.byte_str.chars().nth(2).unwrap();
+        let ch = self.reserved_bit as char;
         ch.is_uppercase() && ch.is_alphabetic()
     }
 }
