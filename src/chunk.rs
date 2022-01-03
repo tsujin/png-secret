@@ -1,3 +1,11 @@
+use crate::chunk_type::ChunkType;
+
+struct Chunk {
+    chunk_type: ChunkType,
+    chunk_data: Vec<u8>,
+    chunk_crc: u32,
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
