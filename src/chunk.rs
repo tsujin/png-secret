@@ -1,9 +1,19 @@
 use crate::chunk_type::ChunkType;
+use crate::{Error, Result};
 
 struct Chunk {
+    chunk_length: u32,
     chunk_type: ChunkType,
     chunk_data: Vec<u8>,
     chunk_crc: u32,
+}
+
+impl TryFrom<&[u8]> for Chunk {
+    type Error = Error;
+
+    fn try_from(bytes: &[u8]) -> Result<Self> {
+        todo!()
+    }
 }
 
 #[cfg(test)]
